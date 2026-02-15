@@ -24,7 +24,7 @@ export default function PaywallScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#1E1B4B' },
-  header: { padding: 32, alignItems: 'center', backgroundColor: '#312E81', borderBottomRadius: 32 },
+  header: { padding: 32, alignItems: 'center', backgroundColor: '#312E81', borderBottomLeftRadius: 32, borderBottomRightRadius: 32 },
   badge: { backgroundColor: '#4C1D95', color: '#E9D5FF', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 20, fontSize: 12, fontWeight: '700', marginBottom: 16 },
   title: { fontSize: 28, fontWeight: 'bold', color: '#FFFFFF' },
   subtitle: { fontSize: 16, color: '#A5B4FC', marginTop: 12 },

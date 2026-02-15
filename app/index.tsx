@@ -1,37 +1,13 @@
-import { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-const SOUNDS = [
-  { id: 'rain', emoji: '🌧️', label: 'Rain', color: '#3B82F6' },
-  { id: 'thunder', emoji: '⛈️', label: 'Thunder', color: '#8B5CF6' },
-  { id: 'waves', emoji: '🌊', label: 'Ocean', color: '#06B6D4' },
-  { id: 'wind', emoji: '💨', label: 'Wind', color: '#A7F3D0' },
-  { id: 'fire', emoji: '🔥', label: 'Fire', color: '#F97316' },
-  { id: 'birds', emoji: '🐦', label: 'Birds', color: '#10B981' },
-  { id: 'forest', emoji: '🌲', label: 'Forest', color: '#22C55E' },
-  { id: 'night', emoji: '🌙', label: 'Night', color: '#6366F1' },
-  { id: 'stream', emoji: '💧', label: 'Stream', color: '#0EA5E9' },
-  { id: 'cafe', emoji: '☕', label: 'Cafe', color: '#D97706' },
-];
+import { useAudioStore, SOUNDS, PRESETS } from '../lib/store';
+import { useAudioPlayer } from '../hooks/useAudioPlayer';
 
 export default function IndexScreen() {
   const router = useRouter();
-  const [activeSounds, setActiveSounds] = useState<string[]>([]);
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  const toggleSound = (id: string) => {
-    if (activeSounds.includes(id)) {
-      setActiveSounds(activeSounds.filter(s => s !== id));
-    } else {
-      setActiveSounds([...activeSounds, id]);
-    }
-  };
-
-  const playAll = () => {
-    setIsPlaying(!isPlaying);
-  };
+  const { activeSounds, isPlaying, toggleSound, loadPreset } = useAudioStore();
+  const { togglePlayPause } = useAudioPlayer();
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -57,7 +33,7 @@ export default function IndexScreen() {
         <View style={styles.controls}>
           <TouchableOpacity 
             style={[styles.playButton, activeSounds.length === 0 && styles.playButtonDisabled]} 
-            onPress={playAll}
+            onPress={togglePlayPause}
             disabled={activeSounds.length === 0}
           >
             <Text style={styles.playButtonText}>{isPlaying ? '⏸️ Pause' : '▶️ Play'}</Text>
@@ -65,7 +41,7 @@ export default function IndexScreen() {
           
           <TouchableOpacity 
             style={styles.mixerButton}
-            onPress={() => router.push({ pathname: '/home', params: { sounds: JSON.stringify(activeSounds) } })}
+            onPress={() => router.push('/home')}
           >
             <Text style={styles.mixerButtonText}>🎛️ Open Mixer</Text>
           </TouchableOpacity>
@@ -92,15 +68,16 @@ export default function IndexScreen() {
 
         <View style={styles.presets}>
           <Text style={styles.sectionTitle}>Popular Mixes</Text>
-          <TouchableOpacity style={styles.presetButton} onPress={() => setActiveSounds(['rain', 'thunder'])}>
-            <Text style={styles.presetEmoji}>🌧️</Text><Text style={styles.presetLabel}>Rainy Night</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.presetButton} onPress={() => setActiveSounds(['waves', 'night'])}>
-            <Text style={styles.presetEmoji}>🏖️</Text><Text style={styles.presetLabel}>Beach Vibes</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.presetButton} onPress={() => setActiveSounds(['forest', 'birds', 'stream'])}>
-            <Text style={styles.presetEmoji}>🌲</Text><Text style={styles.presetLabel}>Forest Morning</Text>
-          </TouchableOpacity>
+          {PRESETS.map(preset => (
+            <TouchableOpacity 
+              key={preset.id} 
+              style={styles.presetButton} 
+              onPress={() => loadPreset(preset.sounds)}
+            >
+              <Text style={styles.presetEmoji}>{preset.emoji}</Text>
+              <Text style={styles.presetLabel}>{preset.label}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
 
         <TouchableOpacity style={styles.premiumButton} onPress={() => router.push('/paywall')}>
@@ -113,7 +90,7 @@ export default function IndexScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#1E1B4B' },
-  header: { padding: 24, paddingTop: 16, backgroundColor: '#312E81', borderBottomRadius: 24 },
+  header: { padding: 24, paddingTop: 16, backgroundColor: '#312E81', borderBottomLeftRadius: 24, borderBottomRightRadius: 24 },
   title: { fontSize: 28, fontWeight: 'bold', color: '#FFFFFF' },
   subtitle: { fontSize: 14, color: '#A5B4FC', marginTop: 4 },
   nowPlaying: { padding: 32, alignItems: 'center', backgroundColor: '#312E81', marginHorizontal: 16, marginTop: -12, borderRadius: 16 },
