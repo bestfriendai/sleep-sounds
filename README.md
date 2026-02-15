@@ -46,3 +46,32 @@ The app uses free ambient sound samples from Pixabay. In production, replace `SO
 ## License
 
 MIT
+
+## API Configuration
+
+### Environment Variables
+
+Create a `.env` file in the project root:
+
+```bash
+# Audio API (optional - for custom sound library)
+AUDIO_API_KEY=your_audio_api_key
+AUDIO_API_URL=https://api.sleepsounds.com/v1
+
+# Sound CDN (for production audio assets)
+SOUND_CDN_URL=https://cdn.sleepsounds.com
+```
+
+### RevenueCat Configuration
+
+1. Create an account at [RevenueCat.com](https://revenuecat.com)
+2. Create products in App Store Connect / Google Play Console:
+   - Monthly: $2.99/month - `sleepsounds_monthly`
+   - Annual: $14.99/year - `sleepsounds_annual`
+3. Configure products in RevenueCat dashboard
+4. Add your API key:
+
+```typescript
+// src/services/purchases.ts
+export const REVENUECAT_API_KEY = 'your_revenuecat_public_key';
+```
