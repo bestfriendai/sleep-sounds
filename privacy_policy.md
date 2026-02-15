@@ -1,0 +1,3 @@
+# Privacy
+
+Local storage only.
